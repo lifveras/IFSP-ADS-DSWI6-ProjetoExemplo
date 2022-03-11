@@ -21,6 +21,18 @@ Faça o que for de sua preferência. Todos os módulos em um único repositório
 
 Veja como criar um repositório no git [aqui](https://docs.github.com/pt/get-started/quickstart/create-a-repo).
 
+Após cria-lo, você pode copiar a URL do repositório clicando no botão *Code*. No diretório onde você irá criar seu projeto, você pode iniciar um repositório git com:
+
+> git init
+
+e em seguida realizar um pull do repositório com 
+
+> git pull <URL>
+
+Digite seguinte comando para ter certeza que o git está apontando para o seu diretório.
+
+> git remote show origin
+
 ## Criando o app-front
 
 No nosso curso iremos desenvolver o front-end da aplicação utilizando o framework Nuxt.js. Para criar um projeto no mesmo, siga os passos:
@@ -62,7 +74,6 @@ Teste executando do novo diretório criado o seguinte comando.
 > npm run dev
 
 Acesse pelo browser o endereço (localhost:3000). Pronto! A partir desta estrutura você poderá desenvolver o front-end. Iremos discutir melhor o Nuxt.js nas aulas dedicadas ao framework.
-
 
 ## Criando o app-api
 
@@ -258,4 +269,7 @@ Os links dos docs dos módulos adicionais estão disponiveis a seguir.
 
 Agora que temos a estrutura da nossa aplicação, podemos adiciona-las ao repositório criado. Veja como em alguns tutoriais selecionados.
 
-- [Subir um repositório existente ao git](https://cursos.alura.com.br/forum/topico-subir-um-projeto-existente-para-o-github-64968)
+- [Git sem complicação](https://rogerdudler.github.io/git-guide/index.pt_BR.html)
+- [Git sempre pede senha](https://docs.github.com/pt/get-started/getting-started-with-git/why-is-git-always-asking-for-my-password)
+- [Autenticação por token](https://www.alura.com.br/artigos/nova-exigencia-do-git-de-autenticacao-por-token-o-que-e-o-que-devo-fazer)
+- [Autenticação pela linha de comando](https://blog.cod3r.com.br/autenticacao-no-github-pela-linha-de-comando/)
