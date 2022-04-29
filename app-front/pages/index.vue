@@ -1,9 +1,249 @@
 <template>
-  <Tutorial />
+  <div>
+    <!-- Navegação -->
+    <b-navbar toggleable="lg" type="dark" variant="info">
+      <b-navbar-brand href="#">IFalmoxarifado</b-navbar-brand>
+
+      <b-nav-form>
+        <b-form-input
+          size="sm"
+          v-model="itemSearch"
+          class="sr-sm-3"
+          placeholder="Busca por descrição"
+        ></b-form-input>
+      </b-nav-form>
+
+      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+      <b-collapse id="nav-collapse" is-nav>
+        <b-navbar-nav right>
+          <b-nav-item
+            @click="
+              cardView = true
+              tableView = false
+            "
+            >Card View</b-nav-item
+          >
+          <b-nav-item
+            @click="
+              tableView = true
+              cardView = false
+            "
+            >Table View</b-nav-item
+          >
+        </b-navbar-nav>
+      </b-collapse>
+
+      <b-button v-b-modal.modal-novo-item variant="dark">Novo Item</b-button>
+    </b-navbar>
+
+    <!-- Modal para inserir novo -->
+    <b-modal id="modal-novo-item" title="Novo item de inventário" hide-footer>
+      <b-overlay :show="show" rounded="sm">
+        <b-form v-on:submit="createNewItem">
+          <label class="mr-sm-2" for="input-patrimonio">Patrimônio:</label>
+          <b-form-input
+            id="input-patrimonio"
+            v-model="novoItem.patrimonio"
+            class="mb-2 mr-sm-2 mb-sm-0"
+            placeholder="Ex: IFSP-BRA-001"
+          ></b-form-input>
+
+          <label class="mr-sm-2" for="input-descricao">Patrimônio:</label>
+          <b-form-input
+            id="input-descricao"
+            v-model="novoItem.descricaoItem"
+            class="mb-2 mr-sm-2 mb-sm-0"
+            placeholder="Descrição do item"
+          ></b-form-input>
+
+          <label class="mr-sm-2" for="item-type">Tipo de item:</label>
+          <b-form-select
+            id="item-type"
+            v-bind:options="listaTiposItens"
+            v-bind:value="null"
+            v-model="novoItem.tipo"
+          >
+          </b-form-select>
+
+          <label class="mr-sm-2" for="input-data">Data de aquisição:</label>
+          <b-form-datepicker
+            id="input-data"
+            v-model="novoItem.dataAquisicao"
+            class="mb-2"
+          >
+          </b-form-datepicker>
+
+          <label class="mr-sm-2" for="input-preco">Preço de aquisição</label>
+          <b-form-input
+            id="input-preco"
+            v-model="novoItem.precoAquisicao"
+            class="mb-2 mr-sm-2 mb-sm-0"
+            placeholde="0.00"
+          ></b-form-input>
+
+          <label class="mr-sm-2" for="input-departamento">Departamento</label>
+          <b-form-select
+            id="input-departamento"
+            v-bind:options="departamentos"
+            v-model="novoItem.departamento"
+            v-bind:value="null"
+          >
+          </b-form-select>
+
+          <label class="mr-sm-2" for="input-responsavel">Responsável</label>
+          <b-form-input
+            v-model="novoItem.responsavel"
+            id="input-responsavel"
+            class="mb-2 mr-sm-2 mb-sm-0"
+            placeholder="Nome do Servidor"
+          ></b-form-input>
+
+          <b-button type="submit" variant="primary" @click="show = !show">Criar</b-button>
+          <b-button type="reset" variant="danger">Limpar</b-button>
+        </b-form>
+      </b-overlay>
+    </b-modal>
+
+    <!-- Tabela do iventário -->
+    <div class="invent-table" v-if="tableView">
+        <b-table id="items-table" striped hover 
+                :per-page="perPage" 
+                :current-page="currentPage" 
+                v-bind:items="items | filterSearch(itemSearch)">
+            <template #cell(itemTipo)="cellData">
+                {{cellData.item.itemTipo.nome}}
+            </template>
+            <template #cell(dataAquisicao)="cellData">
+                {{(new Date(Date.parse(cellData.item.dataAquisicao))).toLocaleString()}}
+            </template>
+            <template #cell(responsavel)="cellData">
+                {{cellData.item.responsavel.nome}}
+            </template>
+        </b-table>
+        <b-pagination align = "center" v-model="currentPage"
+                        :total-rows="totalRows"
+                        :per-page="perPage"
+                        aria-controls="items-table">
+        </b-pagination>
+    </div>
+
+    <!-- Cards do iventário -->
+    <div class="invent-cards" v-if="cardView">        
+        <b-card-group deck>
+            <!-- Dentro do v-for, o filtro deve ser invocado como um método -->
+            <card-item
+                v-bind:key="item.patrimonio"
+                v-for="item in $options.filters.filterSearch(items, itemSearch)"
+                v-bind:item="item"
+            ></card-item>
+        </b-card-group>
+    </div>
+  </div>
 </template>
 
 <script>
+import CardItem from '../components/CardItem.vue'
 export default {
+  //Executado quando a instância do Vue estiver construída
+  async asyncData({ $axios }) {
+    let items, totalRows;
+    try {
+      const response = await $axios.$get('patrimonio');
+      items = response;
+      totalRows = items.length;
+    } catch (ex) {
+      console.log(ex);
+    }
+    return { items, totalRows }
+  },
+  components: { CardItem },
   name: 'IndexPage',
+  data: function () {
+      return {                
+        show: false,
+        tableView: true,
+        cardView: false,
+        itemSearch: "",
+        currentPage: 1,
+        totalRows: 0,
+        perPage: 3,
+        url: '',
+        items: [],
+        listaTiposItens: [
+            {text: "Escolha um:", value:null},
+            "Escritório",
+            "Sala de Aula",
+            "Infraestrutura"
+        ],
+        departamentos:[
+            {text: "Escolha um:", value:null},
+            "CAE",
+            "Informática",
+            "Almoxarifado"
+        ],
+        novoItem: {
+            patrimonio: "",
+            descricaoItem: "",
+            tipo: "",
+            dataAquisicao: null,
+            precoAquisicao: 0.00,
+            departamento: "",
+            responsavel: ""
+        },    
+    };
+  },
+
+  methods: {
+    createNewItem: function (event) {
+      event.preventDefault();
+      console.log(JSON.stringify(this.novoItem));
+      axios
+        .post(this.url.concat('adiciona'), JSON.stringify(this.novoItem))
+        .then((response) => {
+          console.log('Respondeu o servidor');
+          this.$bvModal.hide('modal-novo-item');
+          this.show = false;
+          this.updateItemList();
+        })
+        .catch((error) => {
+          console.error('Não foi possível criar um novo item');
+          console.log(error);
+          this.$bvModal.hide('modal-novo-item');
+          this.show = false;
+        });
+    },
+
+    updateItemList: function () {
+      axios.get(this.url.concat('lista')).then((response) => {
+        this.items = response.data
+        this.totalRows = this.items.length
+      })
+    },
+  },
+
+  filters: {
+    filterSearch: function (items, itemSearch) {
+      if (itemSearch.length > 0) {
+        return items.filter((item) =>
+          item.itemTipo.descricao.toLowerCase().includes(itemSearch.toLowerCase())
+        )
+      } else {
+        return items
+      }
+    },
+  },
 }
 </script>
+
+<style scoped>
+    .invent-table {
+        padding: 0 100px;
+        margin: 0 auto;
+    }
+
+    .invent-cards {
+        padding: 0px 100px;
+        margin: 20px auto;
+    }
+</style>
