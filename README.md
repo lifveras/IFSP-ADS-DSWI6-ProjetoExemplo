@@ -1,4 +1,20 @@
 # Roteiro de implementação - Integração Front-end e Back-end
+# Acessando este branch
+
+Para fazer o clone deste repositório, execute o comando
+
+```git
+git clone 
+```
+
+No diretório criado pelo git, mude de branch, pois por padrão o repositório local estará no **main**. Mude para este repositório chamado **integracao** usando os comandos a seguir:
+
+```git
+git checkout integracao
+git pull origin integracao
+```
+
+Os arquivos deste repositório remoto devem aparecer no seu diretório do repositório local.
 
 # Estrutura projeto Web
 
