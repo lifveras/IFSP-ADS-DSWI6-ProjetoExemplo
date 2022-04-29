@@ -4,7 +4,7 @@
 Para fazer o clone deste repositório, execute o comando
 
 ```git
-git clone 
+git clone https://github.com/lifveras/-DSWI6---estrutura-projeto.git
 ```
 
 No diretório criado pelo git, mude de branch, pois por padrão o repositório local estará no **main**. Mude para este repositório chamado **integracao** usando os comandos a seguir:
@@ -45,7 +45,7 @@ Aqui seguem algumas sugestões sobre como vocês, em grupo, podem dar andamento 
 3. Como vocês jás criaram o arquivo de especificação de API no formato YAML, cada subgrupo poderá criar um mock a partir dele para trabalhar, já que os dados já foram especificados.
 4. Se uma das partes precisar alterar a estrutura da especificação, não esqueça de avisar os demais ou verificar se estão de acordo com a alteração. Para evitar duplicação de versões da especificação da API, adicionem o arquivo no repositório do grupo no GitHub.
 5. Para mockar a API, uma forma fácil sugerido é o uso do módulo Node chamado prism. Para utiliza-lo, basta:
-    - Instalar globalmente o prism com o comando ```npm install -g prism```
+    - Instalar globalmente o prism com o comando ```npm install -g @stoplight/prism-cli```
     - Executar o prism, passando o seu arquivo YAML como parâmetro no comando ``` prism mock <arqivo.yaml>```
 6. Nesta aplicação, você pode verificar o arquivo de especificação "dswi6-TesteAPI-1.0.0-swagger.yaml" 
 
