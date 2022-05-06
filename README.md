@@ -90,12 +90,65 @@ Abaixo, segue o exemplo da requisição get no documento de exemplo. A função 
 
 O back-end da aplicação de exemplo ainda não foi implementado. Siga as instruções das aulas anteriores, onde no back-end devem constar
 
-  - As rotas da API
-  - Os controllers das rotas
   - Implementação dos testes
+  - A lógica de negócio
+  - Os controllers das rotas
+  - As rotas da API
 
 **Obs**: Nesta etapa, não estaremos usando banco de dados ainda. Portanto os dados podem ser *hardcoded*.
+
+Vamos iniciar a descrição dessas etapas pelos testes. Em seguida, vamos descrever a implementação da API do menos dependente (lógica de negócio) para o mais dependente (controllers);
 
 > SUGESTÃO:
 >
 > Para implementação dos testes, é considerada uma boa prática que os mesmos sejam escritos primeiro, falhem, e em seguida o código necessário para fazê-lo passar é implementado. Isso está em acordo com os principios do Desenvolvimento Orientado a Testes (do inglês, Test-driven Development). Porém, é só uma sugestão, faça como achar mais adequado.
+
+## Criando os testes no Jest
+
+Inicialmente, precisamos instalar os módulos do Jest e do supertest.
+
+```bash
+  npm install --save-dev jest supertest 
+```
+
+É interessante também disponibilizar os tipos de dados do Jest para facilitar o desenvolvimento com o VS Code. Instale esta execução.
+
+```bash
+  npm install @types/jest
+```
+
+Não se esqueça de também configurar no arquivo package.json o script para rodas o teste.
+
+
+```json
+  "scripts": {
+    "test": "jest",
+    "serve": "nodemon server.js"
+  },
+```
+
+Para executar os testes, utilize o comando abaixo no diretório onde está o arquivo package.json.
+
+```bash
+  npm run test
+```
+
+Os exemplos de como fazer os testes você pode ver no código de teste da aplicação de exemplo na pasta *test*.
+
+## Lógica de negócio
+
+A lógica de negócio será mantida dentro da pasta *services*. É interessante manter um arquivo para cada uma das entidades do sistema.  Por exemplo, um arquivo ItemPatrimonioService.js foi criado, e dentro do mesmo funções como getAllItemPatrimonio() e removeItemPatrimonioById(patrimonio). Se essas operações envolverem mais de uma entidade poderemos fazê-las aí. Veja sobre essa divisão no [link](https://www.coreycleary.me/project-structure-for-an-express-rest-api-when-there-is-no-standard-way). 
+
+Em *database* também teremos um banco de dados fake, que é uma classe com alguns dados de inicio. Posteriomente iremos substitui-lo pela configuração do ORM.
+
+Na pasta repository, nós colocamos uma classe por entidade para encapsular todas as operações com o banco de dados. Separando dessa forma, também ficará mais fácil acoplarar o ORM, precisaremos alterar apenas em um único arquivo. Veja mais sobre o [Repository Pattern](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design).
+
+## Controllers
+
+Os controllers contém os callbacks que serão associados a cada uma das rotas. Definimos uma para cada rota planejada. Usualmente dispõe funcionalidades a cada operação CRUD para cada uma das entidades.
+
+As rotas definem os recursos disponíveis
+
+## Rotas da API
+
+Nas rotas associamos os endpoints (HTTP METHOD + PATH) com os controllers.

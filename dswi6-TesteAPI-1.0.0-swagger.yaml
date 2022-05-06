@@ -21,8 +21,8 @@ paths:
       tags:
         - patrimonio
       description: |
-        O cliente não precisa passar nenhuma informação. Apenas acessandp este endpoint, 
-        ele obterá todos os itens do sistema.
+        O cliente não precisa passar nenhuma informação. Apenas acessando este endpoint, 
+        ele obterá todos os itens.
       parameters:
         - in: query
           name: searchString
@@ -151,13 +151,13 @@ paths:
       parameters: 
         - in: path
           name: id_patrimonio
-          description: User ID
+          description: Patrimonio ID
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Retorno o item para patrimônio informado
+          description: Retorno de mensagem removida para patrimônio informado
           content:
             application/text:
               example: Item removido
