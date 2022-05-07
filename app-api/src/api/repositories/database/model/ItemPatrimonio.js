@@ -20,7 +20,7 @@ class ItemPatrimonio {
                                      itemDados.dataAquisicao : new Date(itemDados.dataAquisicao)
         this.precoAquisicao = itemDados.precoAquisicao;
         this.departamento = itemDados.departamento
-        this.responsavel = typeof(itemDados.itemTipo) === "object" ? itemDados.responsavel : {
+        this.responsavel = typeof(itemDados.responsavel) === "object" ? itemDados.responsavel : {
           prontuario: "BP0910292",
           nome: itemDados.responsavel,  
           telefone: "408-867-5309",

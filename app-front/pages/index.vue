@@ -62,7 +62,7 @@
             id="item-type"
             v-bind:options="listaTiposItens"
             v-bind:value="null"
-            v-model="novoItem.tipo"
+            v-model="novoItem.itemTipo"
           >
           </b-form-select>
 
@@ -202,9 +202,10 @@ export default {
       // por this.$axios.
       // Veja mais sobre em https://axios.nuxtjs.org/usage
       this.$axios
-        .$post("patrimonio", JSON.stringify(this.novoItem))
+        .$post("patrimonio", this.novoItem)
         .then((response) => {
           console.log('Resposta do servidor obtida');
+          // Acessa o objeto que controla os modais e esconde aquele que você passar o id.
           this.$bvModal.hide('modal-novo-item');
           this.show = false;
           this.updateItemList();
@@ -222,8 +223,7 @@ export default {
       // por this.$axios.
       // Veja mais sobre em https://axios.nuxtjs.org/usage
       this.$axios.$get("patrimonio").then((response) => {
-        console.log(response);
-        this.items = response
+        this.items = response;
         this.totalRows = this.items.length
       })      
     },

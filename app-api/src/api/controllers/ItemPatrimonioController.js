@@ -57,7 +57,7 @@ module.exports = {
     // handler para remover um item pelo seu código de patrimonio
     remove: function (req, res) {
         ItemPatrimonioService.removeItemPatrimonioById(
-        // req.params acessa os parâmetros passados na path definidos como :nomeparam no router
+            // req.params acessa os parâmetros passados na path definidos como :nomeparam no router
             req.params.patrimonio_id).then((status) => {
                 res.statusCode = 200; // Status HTTP para Operação bem sucedida "No content";
                 res.set("Content-Type", "application/json");
