@@ -117,8 +117,31 @@ describe("Testes para o path 'patrimônio'", () => {
             .delete("/patrimonio/IFSP-BR-001")
             .set('Accept', 'application/json');
 
-        // Espera que o código HTTP seja 204
-        expect(res.statusCode).toBe(204); 
-        // expect(res.body).toEqual({ status: "Item removido com sucesso." });
+        // Espera que o código HTTP seja 200
+        expect(res.statusCode).toBe(200); 
+        expect(res.body).toEqual({ status: "Item removido com sucesso." });
+    });
+
+    const agent = request.agent(app);
+
+    test("Não retorna objeto pro Id em um GET após executar um DELETE ", async () => {
+
+        // Faz primeiro a requisição DELETE ...        
+        const resPOST = await agent
+                            .delete("/patrimonio/IFSP-BR-001")
+                            .set('Accept', 'application/json');
+
+        // Espera que o código HTTP seja 200
+        expect(resPOST.statusCode).toBe(200); 
+        expect(resPOST.body).toEqual({ status: "Item removido com sucesso." });
+
+        // ... Para em seguida fazer um GET e obter um 404.
+        const resGET = await agent
+                            .get("/patrimonio/IFSP-BR-001")
+                            .set('Accept', 'application/json');
+
+        // Espera que o código HTTP seja 404 - Not Found
+        expect(resGET.statusCode).toBe(404); 
+        expect(resGET.body).toEqual({status: `Não foi possível encontrar o item para IFSP-BR-001.`});
     });
 });

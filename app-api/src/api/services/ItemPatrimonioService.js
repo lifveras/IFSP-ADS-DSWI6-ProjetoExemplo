@@ -7,8 +7,8 @@ module.exports = {
         return data;
     },
 
-    getAllItemPatrimonioById: async function (patrimonioId){
-        const data = await ItemPatrimonioRepository.find(patrimonioId);
+    getItemPatrimonioById: async function (patrimonioId){
+        const data = await ItemPatrimonioRepository.find(patrimonioId)
         return data;
     },
 

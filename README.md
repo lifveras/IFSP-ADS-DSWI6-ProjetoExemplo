@@ -16,6 +16,12 @@ git pull origin integracao
 
 Os arquivos deste repositório remoto devem aparecer no seu diretório do repositório local.
 
+Não se esqueça de baixar as dependências do projeto com o NPM executando o projeto a seguir:
+
+```git
+npm install
+```
+
 # Estrutura projeto Web
 
 Neste projeto, temos 3 módulos:
@@ -152,3 +158,7 @@ As rotas definem os recursos disponíveis
 ## Rotas da API
 
 Nas rotas associamos os endpoints (HTTP METHOD + PATH) com os controllers.
+
+## Demais detalhes
+
+Para outros detalhes veja os comentários no código.

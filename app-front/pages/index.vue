@@ -49,10 +49,10 @@
             placeholder="Ex: IFSP-BRA-001"
           ></b-form-input>
 
-          <label class="mr-sm-2" for="input-descricao">Patrimônio:</label>
+          <label class="mr-sm-2" for="input-descricao">Descrição:</label>
           <b-form-input
             id="input-descricao"
-            v-model="novoItem.descricaoItem"
+            v-model="novoItem.descricao"
             class="mb-2 mr-sm-2 mb-sm-0"
             placeholder="Descrição do item"
           ></b-form-input>
@@ -184,8 +184,8 @@ export default {
         ],
         novoItem: {
             patrimonio: "",
-            descricaoItem: "",
-            tipo: "",
+            descricao: "",
+            itemTipo: "",
             dataAquisicao: null,
             precoAquisicao: 0.00,
             departamento: "",
@@ -198,10 +198,13 @@ export default {
     createNewItem: function (event) {
       event.preventDefault();
       console.log(JSON.stringify(this.novoItem));
-      axios
-        .post(this.url.concat('adiciona'), JSON.stringify(this.novoItem))
+      // A instância do axios disponível no Nuxt.js é acessível
+      // por this.$axios.
+      // Veja mais sobre em https://axios.nuxtjs.org/usage
+      this.$axios
+        .$post("patrimonio", JSON.stringify(this.novoItem))
         .then((response) => {
-          console.log('Respondeu o servidor');
+          console.log('Resposta do servidor obtida');
           this.$bvModal.hide('modal-novo-item');
           this.show = false;
           this.updateItemList();
@@ -215,10 +218,25 @@ export default {
     },
 
     updateItemList: function () {
-      axios.get(this.url.concat('lista')).then((response) => {
-        this.items = response.data
+      // A instância do axios disponível no Nuxt.js é acessível
+      // por this.$axios.
+      // Veja mais sobre em https://axios.nuxtjs.org/usage
+      this.$axios.$get("patrimonio").then((response) => {
+        console.log(response);
+        this.items = response
         this.totalRows = this.items.length
-      })
+      })      
+    },
+
+    removeSelectedItem: function (item) {
+      // A instância do axios disponível no Nuxt.js é acessível
+      // por this.$axios.
+      // Veja mais sobre em https://axios.nuxtjs.org/usage
+      this.$axios.$delete(`patrimonio/${patrimonioId}`).then((response) => {
+        let msg = response.data
+        alert(msg);
+        this.updateItemList();
+      })      
     },
   },
 

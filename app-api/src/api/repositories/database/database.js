@@ -23,8 +23,8 @@ class Banco {
     }
 
     removeByPatrimonio(patrimonio) {
-        const item = this.items.filter(item => item.patrimonio === patrimonio);
-        return item ? item.pop(item) : null;
+        let item = this.items.splice(this.items.findIndex(item => item.patrimonio === patrimonio), 1);
+        return item;
     }
 }
 

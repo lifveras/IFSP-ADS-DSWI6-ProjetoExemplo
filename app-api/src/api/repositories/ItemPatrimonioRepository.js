@@ -12,6 +12,7 @@ class ItemPatrimonioRepository{
 
     async create(itemPatrimonio){
         const newItem = new ItemPatrimonio(itemPatrimonio);
+        console.log(newItem);
         database.addItem(newItem);
         return newItem;
     }
