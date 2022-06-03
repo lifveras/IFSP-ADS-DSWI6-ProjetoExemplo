@@ -146,7 +146,10 @@
 import CardItem from '../components/CardItem.vue'
 export default {
   //Executado quando a instância do Vue estiver construída
-  async asyncData({ $axios }) {
+  async asyncData({ $axios}) {
+    //Novo Código: Verifica se o usuário está logado (token válido)
+    // $auth.strategy.token.get()
+
     let items, totalRows;
     try {
       const response = await $axios.$get('patrimonio');
@@ -218,7 +221,7 @@ export default {
         });
     },
 
-    updateItemList: function () {
+    updateItemList() {
       // A instância do axios disponível no Nuxt.js é acessível
       // por this.$axios.
       // Veja mais sobre em https://axios.nuxtjs.org/usage
@@ -228,7 +231,7 @@ export default {
       })      
     },
 
-    removeSelectedItem: function (item) {
+    removeSelectedItem(item) {
       // A instância do axios disponível no Nuxt.js é acessível
       // por this.$axios.
       // Veja mais sobre em https://axios.nuxtjs.org/usage
@@ -241,7 +244,7 @@ export default {
   },
 
   filters: {
-    filterSearch: function (items, itemSearch) {
+    filterSearch(items, itemSearch) {
       if (itemSearch.length > 0) {
         return items.filter((item) =>
           item.itemTipo.descricao.toLowerCase().includes(itemSearch.toLowerCase())
