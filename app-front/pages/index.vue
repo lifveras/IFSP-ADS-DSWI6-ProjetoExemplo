@@ -147,7 +147,7 @@ import CardItem from '../components/CardItem.vue'
 export default {
   //Executado quando a instância do Vue estiver construída
   async asyncData({ $axios}) {
-    //Novo Código: Verifica se o usuário está logado (token válido)
+    // Novo Código: Verifica se o usuário está logado (token válido)
     // $auth.strategy.token.get()
 
     let items, totalRows;
