@@ -22,143 +22,109 @@ Não se esqueça de baixar as dependências do projeto com o NPM executando o pr
 npm install
 ```
 
-# Estrutura projeto Web
+# Instalando o sequelize e o sequelize-cli
 
-Neste projeto, temos 3 módulos:
+ Primeiro, instale o sequelize no projeto:
 
-- **app-api**: api rest com a lógica de negócio da aplicação. Ela fará a comunicação com o banco de dados;
-- **app-auth**: api rest de módulo dedicado ao gerenciamento de usuários da aplicação;
-- **app-front**: view da aplicação;
+ > npm install sequelize
 
-## Repositórios no Github
+Instale a ferramenta de linha de comando do sequelize usando o comando a seguir:
 
-Neste branch, forem implementadas funcionalidades de uma aplicação de exemplo chamada "IFalmoxarifado", que tem como objetivo atender aos seguintes requisitos:
+> npm install --save-dev sequelize-cli
 
-- Mostrar os itens de inventários em uma tabela
-- Mostrar os itens como blocos de dados (Cards)
-- Permitir buscar os item de inventário
-- Permitir deletar um item de inventário
-- Permitir inserir um novo item de inventário
+Navegue até a pasta "/database" e inicie um projeto sequelize dentro desta pasta. Para isso, execute .
 
-Você fará o mesmo, porém para as especificações que você e seu grupo enviaram no projeto de aplicação web da disciplina.
+> npx sequelize-cli init
 
-## Sugestão de desenvolvimento
+As pastas config, migrations, models e seeders devem ter sido criadas.
 
-Aqui seguem algumas sugestões sobre como vocês, em grupo, podem dar andamento às atividades de desenvolvimento do projeto.
+# Criando os models com o sequelize-cli
 
-1. Divida seu grupo em especialistas: uma parte para back-end, e a outra para fron-end.
-2. Insiram cada um dos membros do grupo no repositório do GitHub enviado para a primeira avaliação da disciplina.
-3. Como vocês jás criaram o arquivo de especificação de API no formato YAML, cada subgrupo poderá criar um mock a partir dele para trabalhar, já que os dados já foram especificados.
-4. Se uma das partes precisar alterar a estrutura da especificação, não esqueça de avisar os demais ou verificar se estão de acordo com a alteração. Para evitar duplicação de versões da especificação da API, adicionem o arquivo no repositório do grupo no GitHub.
-5. Para mockar a API, uma forma fácil sugerido é o uso do módulo Node chamado prism. Para utiliza-lo, basta:
-    - Instalar globalmente o prism com o comando ```npm install -g @stoplight/prism-cli```
-    - Executar o prism, passando o seu arquivo YAML como parâmetro no comando ``` prism mock <arqivo.yaml>```
-6. Nesta aplicação, você pode verificar o arquivo de especificação "dswi6-TesteAPI-1.0.0-swagger.yaml" 
+Agora, Vamos utilizar o comando `model:generate` para criar as models. Nesta aplicação de exemplo nós estamos lidando com quatro entidades/models, como foi especificado na API em YAML:
 
-## Front-end
+- Responsavel: prontuario, nome, telefone, email;
+- ItemTipo: nome, descricao, imagem;
+- ItemPatrimonio: patrimonio, descricao, itemTipo, dataAquisicao, precoAquisicao departamento, responsavel;
 
-Para executar o projeto de front-end, digite o comando a seguir dentro do diretório da pasta "app-front".
+Para cada model que criarmos, passamos o seu `name` e a sua lista de `atributes`. Os comandos para criar os models serão:
 
-> npm install
-> npm run dev
+> npx sequelize-cli model:generate --name Responsavel --attributes prontuario:string,nome:string,telefone:string,email:string
+> npx sequelize-cli model:generate --name ItemTipo --attributes nome:string,descricao:string,imagem:string
 
-O link de acesso para a aplicação front-end será apresentada no console após o seu build.
+Perceba que ItemPatrimonio possui associação com ItemTipo e Responsavel. Para definir essa associação, iremos definir campos de id para cada uma das entidades. Posteriormente precisaremos definir as associações entre as classes diretamente em seu arquivo na pasta model.
 
-### Observações:
-Vimos no momento de criar o projeto Nuxt.js a sua configuração com a biblioteca axios. Ela será a responsável por fazer requisições HTTP para a API criada com o Node. Enquanto ela não está pronta, utilize o mock da especificação da API.
+> npx sequelize-cli model:generate --name ItemPatrimonio --attributes patrimonio:string,descricao:string,itemTipoId:integer,dataAquisicao:date,precoAquisicao:float,departamento:string,responsavelId:integer
 
-Para configurar a URL para acesso ao mock (ou ao servidor da API da sua aplicação), modifique o arquivo nuxt.config.js.
+Como resultado dessas operações, veja dentro da pasta ´/models´ os arquivos itempatrimonio.js, itemtipo.js, responsavel.js. Eles representam os models.
 
- ```js
-  axios: {
-    baseURL: 'http://127.0.0.1:4010/',
-  },
- ```
-Troque a URL acima pela informada pelo prism ou ferramenta de mock escolhida por você.
+Além dos models, os comandos criaram as migrations. Veja as migrations na pasta homônima. Cada arquivo funciona como um histórico das modificações dos models.
 
-Abaixo, segue o exemplo da requisição get no documento de exemplo. A função asyncModel é invocada quando o componente Vue for criado. Recebemos por parâmetro o objeto que representa o axios, usando a notação ```{$axios}```. Lembre-se que para adicionar o valor retornado pelo axios a propriedade data do componente vue, devemos retorna-la entre {}.
+# Defininfo as assoações nas migrations
+
+https://levelup.gitconnected.com/creating-sequelize-associations-with-the-sequelize-cli-tool-d83caa902233
+```javascript
+  onDelete: 'CASCADE',
+          references: {
+            model: 'Users',
+            key: 'id',
+            as: 'userId',
+          }
+        }
+```
+
+# Definindo associações nos Models
+
+Você pode definir as associações utilizando os métodos `.hasOne()`, `.hasMany()` e `..belongsToMany()`. Nas associações deste aplicativo, ItemPatrimonio está associado com um responsável e com um ItemTipo, logo usaremos o `.hasOne()` duas vezes no itemPatrimonio e `.belongsTo()` nos outros models para indicar o outro lado da associação. Nos arquivos de models criados, as associações então ficarão da seguinte forma.
 
 ```javascript
-  async asyncData({ $axios }) {
-    let items, totalRows;
-    try {
-      const response = await $axios.$get('patrimonio');
-      items = response;
-      totalRows = items.length;
-    } catch (ex) {
-      console.log(ex);
+  static associate(models) {
+      // define associação com responsavel
+      ItemPatrimonio.hasOne(models.responsavel, {
+        foreignKey: 'responsavelId',
+        onDelete: 'NOTHING'
+      });
+      // define associação com itemtipo
+      ItemPatrimonio.hasOne(models.itemtipo, {
+        foreignKey: 'itemTipoId',
+        onDelete: 'NOTHING'
+      });
     }
-    return { items, totalRows }
+```
+
+```javascript
+  static associate(models) {
+      Responsavel.belongsTo(models.itempatrimonio);
+  }
+```
+
+```javascript
+  static associate(models) {
+      // define association here
+      ItemTipo.belongsTo(models.itempatrimonio);
+  }
+```
+
+# Executando as Migrations
+
+Para refletir os models no SGBD, precisamos executar as migrations. Primeiro, certifique-se que o banco de dados exista no SGBD. Em seguida configure os parâmetros de conexão dentro do arquivo "/config/config.json".
+
+```javascript
+  "development": {
+    "username": "root",
+    "password": "ifsp",
+    "database": "almoxarifado_app",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
   },
 ```
 
-## Back-end
+Neste exemplo foi utilizado o SGBD mysql. Certifique-se de ter adicionado o módulo para conexão com o mysly verificando o arquivo package.json do módulo app-api. Caso não encontra, insta-lo executando o comando na raiz de app-api:
 
-O back-end da aplicação de exemplo ainda não foi implementado. Siga as instruções das aulas anteriores, onde no back-end devem constar
+> npm install mysql
 
-  - Implementação dos testes
-  - A lógica de negócio
-  - Os controllers das rotas
-  - As rotas da API
+Agora execute as migrations com o comando abaixo:
 
-**Obs**: Nesta etapa, não estaremos usando banco de dados ainda. Portanto os dados podem ser *hardcoded*.
+> npx sequelize-cli db:migrate 
 
-Vamos iniciar a descrição dessas etapas pelos testes. Em seguida, vamos descrever a implementação da API do menos dependente (lógica de negócio) para o mais dependente (controllers);
+Verifique no seu banco de dados as tabelas criadas.
 
-> SUGESTÃO:
->
-> Para implementação dos testes, é considerada uma boa prática que os mesmos sejam escritos primeiro, falhem, e em seguida o código necessário para fazê-lo passar é implementado. Isso está em acordo com os principios do Desenvolvimento Orientado a Testes (do inglês, Test-driven Development). Porém, é só uma sugestão, faça como achar mais adequado.
-
-## Criando os testes no Jest
-
-Inicialmente, precisamos instalar os módulos do Jest e do supertest.
-
-```bash
-  npm install --save-dev jest supertest 
-```
-
-É interessante também disponibilizar os tipos de dados do Jest para facilitar o desenvolvimento com o VS Code. Instale esta execução.
-
-```bash
-  npm install @types/jest
-```
-
-Não se esqueça de também configurar no arquivo package.json o script para rodas o teste.
-
-
-```json
-  "scripts": {
-    "test": "jest",
-    "serve": "nodemon server.js"
-  },
-```
-
-Para executar os testes, utilize o comando abaixo no diretório onde está o arquivo package.json.
-
-```bash
-  npm run test
-```
-
-Os exemplos de como fazer os testes você pode ver no código de teste da aplicação de exemplo na pasta *test*.
-
-## Lógica de negócio
-
-A lógica de negócio será mantida dentro da pasta *services*. É interessante manter um arquivo para cada uma das entidades do sistema.  Por exemplo, um arquivo ItemPatrimonioService.js foi criado, e dentro do mesmo funções como getAllItemPatrimonio() e removeItemPatrimonioById(patrimonio). Se essas operações envolverem mais de uma entidade poderemos fazê-las aí. Veja sobre essa divisão no [link](https://www.coreycleary.me/project-structure-for-an-express-rest-api-when-there-is-no-standard-way). 
-
-Em *database* também teremos um banco de dados fake, que é uma classe com alguns dados de inicio. Posteriomente iremos substitui-lo pela configuração do ORM.
-
-Na pasta repository, nós colocamos uma classe por entidade para encapsular todas as operações com o banco de dados. Separando dessa forma, também ficará mais fácil acoplarar o ORM, precisaremos alterar apenas em um único arquivo. Veja mais sobre o [Repository Pattern](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design).
-
-## Controllers
-
-Os controllers contém os callbacks que serão associados a cada uma das rotas. Definimos uma para cada rota planejada. Usualmente dispõe funcionalidades a cada operação CRUD para cada uma das entidades.
-
-As rotas definem os recursos disponíveis
-
-## Rotas da API
-
-Nas rotas associamos os endpoints (HTTP METHOD + PATH) com os controllers.
-
-## Demais detalhes
-
-Para outros detalhes veja os comentários no código.
