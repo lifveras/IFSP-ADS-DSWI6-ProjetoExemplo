@@ -15,7 +15,14 @@ module.exports = {
         type: Sequelize.STRING
       },
       itemTipoId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        // Define a relação entre ItemTipo e ItemPatrimonio
+        // onDelete: 'NOTHING',
+        references: {
+          model: 'ItemTipos',
+          key: 'id',
+          as: 'itemTipoId',
+        }
       },
       dataAquisicao: {
         type: Sequelize.DATE
@@ -27,7 +34,14 @@ module.exports = {
         type: Sequelize.STRING
       },
       responsavelId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING,
+        // Define a relação entre Responsavel e ItemPatrimonio
+        // onDelete: 'NOTHING',
+        references: {
+          model: 'Responsaveis',
+          key: 'prontuario',
+          as: 'responsavelId',
+        }
       },
       createdAt: {
         allowNull: false,

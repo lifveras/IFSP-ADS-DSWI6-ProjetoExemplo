@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     dataAquisicao: DataTypes.DATE,
     precoAquisicao: DataTypes.FLOAT,
     departamento: DataTypes.STRING,
-    responsavelId: DataTypes.INTEGER
+    responsavelId: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'ItemPatrimonio',

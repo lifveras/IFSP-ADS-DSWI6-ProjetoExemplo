@@ -1,4 +1,4 @@
-# Roteiro de implementação - Integração Front-end e Back-end
+# Roteiro de implementação - ORM (Object Relational Mapper)
 # Acessando este branch
 
 Para fazer o clone deste repositório, execute o comando
@@ -53,24 +53,58 @@ Para cada model que criarmos, passamos o seu `name` e a sua lista de `atributes`
 
 Perceba que ItemPatrimonio possui associação com ItemTipo e Responsavel. Para definir essa associação, iremos definir campos de id para cada uma das entidades. Posteriormente precisaremos definir as associações entre as classes diretamente em seu arquivo na pasta model.
 
-> npx sequelize-cli model:generate --name ItemPatrimonio --attributes patrimonio:string,descricao:string,itemTipoId:integer,dataAquisicao:date,precoAquisicao:float,departamento:string,responsavelId:integer
+> npx sequelize-cli model:generate --name ItemPatrimonio --attributes patrimonio:string,descricao:string,itemTipoId:integer,dataAquisicao:date,precoAquisicao:float,departamento:string,responsavelId:string
 
-Como resultado dessas operações, veja dentro da pasta ´/models´ os arquivos itempatrimonio.js, itemtipo.js, responsavel.js. Eles representam os models.
+Como resultado dessas operações, veja dentro da pasta ´app-api/src/models´ os arquivos itempatrimonio.js, itemtipo.js, responsavel.js. Eles representam os models. 
 
 Além dos models, os comandos criaram as migrations. Veja as migrations na pasta homônima. Cada arquivo funciona como um histórico das modificações dos models.
 
-# Defininfo as assoações nas migrations
+O sequelize, por padrão, pluraliza os nomes dos models para definir as tabelas. Por exemplo, *ItemPatrimonio* se tornará *ItemPatrimonios*. Entretanto, *Responsavel* irá virar *Responsavels*. Corrija isso na migrations criada para a model Responsavel no arquivo **xxxx-create-responsavel.js**.
 
-https://levelup.gitconnected.com/creating-sequelize-associations-with-the-sequelize-cli-tool-d83caa902233
 ```javascript
-  onDelete: 'CASCADE',
-          references: {
-            model: 'Users',
-            key: 'id',
-            as: 'userId',
-          }
-        }
+//...
+ async up(queryInterface, Sequelize) {
+    // Nome do model corrigido de "Responsavels" para "Responsaveis"
+    await queryInterface.createTable('Responsaveis', {
+//...
 ```
+
+```javascript
+//...
+async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('Responsaveis');
+  }
+//...
+```
+
+# Definindo as associações nas migrations
+
+O sequelize-cli não gerar as associações nas migrations. Portanto teremos que configura-las manualmente. Nos arquivos das migrations dentro da pasta **database/migrations** é onde faremos as modificações. Abra o arquivo com o nome no padrão **xxxx-create-item-patrimonio.js** e dentro dos campos *itemTipoId* e *responsavelId* deixe como nas estruturas a seguir
+
+```javascript
+  itemTipoId: {
+        type: Sequelize.INTEGER,
+        // Define a relação entre ItemTipos e ItemPatrimonios
+        references: {
+          model: 'ItemTipos',
+          key: 'id',
+          as: 'itemTipoId',
+        }
+  },
+```
+```javascript
+  responsavelId: {
+        type: Sequelize.INTEGER,
+        // Define a relação entre Responsaveis e ItemPatrimonios
+        references: {
+          model: 'Responsaveis',
+          key: 'id',
+          as: 'responsavelId',
+      }
+  },
+```
+
+Veja mais neste [link](https://medium.com/@andrewoons/how-to-define-sequelize-associations-using-migrations-de4333bf75a7) e neste [link](https://codeburst.io/sequelize-migrations-setting-up-associations-985d29b61ee7).
 
 # Definindo associações nos Models
 
@@ -122,7 +156,7 @@ Neste exemplo foi utilizado o SGBD mysql. Certifique-se de ter adicionado o mód
 
 > npm install mysql
 
-Agora execute as migrations com o comando abaixo:
+Agora execute as migrations com o comando abaixo no diretórios **app-api/src/database**:
 
 > npx sequelize-cli db:migrate 
 
