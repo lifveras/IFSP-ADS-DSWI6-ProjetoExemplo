@@ -130,12 +130,12 @@ Você pode definir as associações utilizando os métodos `.hasOne()`, `.hasMan
 ```javascript
   static associate(models) {
       // define associação com responsavel
-      ItemPatrimonio.hasOne(models.responsavel, {
+      ItemPatrimonio.hasOne(models.Responsavel, {
         foreignKey: 'responsavelId',
         onDelete: 'NOTHING'
       });
       // define associação com itemtipo
-      ItemPatrimonio.hasOne(models.itemtipo, {
+      ItemPatrimonio.hasOne(models.ItemTipo, {
         foreignKey: 'itemTipoId',
         onDelete: 'NOTHING'
       });
@@ -144,14 +144,14 @@ Você pode definir as associações utilizando os métodos `.hasOne()`, `.hasMan
 
 ```javascript
   static associate(models) {
-      Responsavel.belongsTo(models.itempatrimonio);
+      Responsavel.belongsTo(models.ItemPatrimonio);
   }
 ```
 
 ```javascript
   static associate(models) {
       // define association here
-      ItemTipo.belongsTo(models.itempatrimonio);
+      ItemTipo.belongsTo(models.ItemPatrimonio);
   }
 ```
 
