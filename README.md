@@ -24,15 +24,11 @@ npm install
 
 # Instalando o sequelize e o sequelize-cli
 
- Primeiro, instale o sequelize no projeto:
+ Primeiro, instale o sequelize globalmente:
 
- > npm install sequelize
+ > npm -g install sequelize
 
-Instale a ferramenta de linha de comando do sequelize usando o comando a seguir:
-
-> npm install --save-dev sequelize-cli
-
-Nos branchs anteriores, estavamos utilizando o diretório "/app-api/src/api/repositories/database" para simular um banco de dados. Agor, navegue até a pasta "/app-api/src/database" e inicie um projeto sequelize dentro desta pasta. Para isso, execute
+Nos branchs anteriores, estavamos utilizando o diretório "/app-api/src/api/repositories/database" para simular um banco de dados. Agora, navegue até a pasta "/app-api/src/database" e inicie um projeto sequelize dentro desta pasta. Para isso, execute
 
 > npx sequelize-cli init
 
@@ -40,7 +36,7 @@ As pastas config, migrations, models e seeders devem ter sido criadas.
 
 # Criando os models com o sequelize-cli
 
-Agora, vamos utilizar o comando `model:generate` para criar as models. Nesta aplicação de exemplo nós estamos lidando com quatro entidades/models, como foi especificado na API em YAML:
+Agora, vamos utilizar o comando `model:generate` para criar os models. Nesta aplicação de exemplo nós estamos lidando com quatro entidades/models, como foi especificado na API em YAML:
 
 - Responsavel: prontuario, nome, telefone, email;
 - ItemTipo: nome, descricao, imagem;
@@ -51,11 +47,11 @@ Para cada model que criarmos, passamos o seu `name` e a sua lista de `atributes`
 > npx sequelize-cli model:generate --name Responsavel --attributes prontuario:string,nome:string,telefone:string,email:string
 > npx sequelize-cli model:generate --name ItemTipo --attributes nome:string,descricao:string,imagem:string
 
-Perceba que ItemPatrimonio possui associação com ItemTipo e Responsavel. Para definir essa associação, iremos definir campos de id para cada uma das entidades. Posteriormente precisaremos definir as associações entre as classes diretamente em seu arquivo na pasta model.
+Perceba que ItemPatrimonio possui associação com ItemTipo e Responsavel. Para definir essa associação, iremos definir campos de id para cada uma das entidades. Posteriormente precisaremos definir as associações entre as classes diretamente em seus arquivos na pasta model.
 
 > npx sequelize-cli model:generate --name ItemPatrimonio --attributes patrimonio:string,descricao:string,itemTipoId:integer,dataAquisicao:date,precoAquisicao:float,departamento:string,responsavelId:string
 
-Como resultado dessas operações, veja dentro da pasta ´/app-api/src/models´ os arquivos itempatrimonio.js, itemtipo.js, responsavel.js. Eles representam os models. 
+Como resultado dessas operações, veja dentro da pasta ´/app-api/src/models´ os arquivos itempatrimonio.js, itemtipo.js, responsavel.js. Eles representam os models.
 
 Além dos models, os comandos criaram as migrations. Veja as migrations na pasta homônima. Cada arquivo funciona como um histórico das modificações dos models.
 
@@ -64,7 +60,7 @@ O sequelize, por padrão, pluraliza os nomes dos models para definir as tabelas.
 ```javascript
 //...
  async up(queryInterface, Sequelize) {
-    // Nome do model corrigido de "Responsavels" para "Responsaveis"
+    // Nome do model corrigido de "Responsavels" para "Responsavel"
     await queryInterface.createTable('Responsavel', {
 //...
 ```
@@ -89,7 +85,7 @@ Na migration do model Responsavel, foi criado automaticamente um campo chamado i
      allowNull: false,
      autoIncrement: false,
      primaryKey: true,
-     type: Sequelize.STRING,
+     type: DataTypes.STRING,
    },
 //...
 ```
@@ -100,8 +96,8 @@ O sequelize-cli não gera as associações nas migrations. Portanto teremos que 
 
 ```javascript
   itemTipoId: {
-        type: Sequelize.INTEGER,
-        // Define a relação entre ItemTipos e ItemPatrimonios através da chave primária "id"
+        type: DataTypes.INTEGER,
+        // Define a relação entre ItemTipo e ItemPatrimonio através da chave primária "id"
         references: {
           model: 'ItemTipos',
           key: 'id',
@@ -112,7 +108,7 @@ O sequelize-cli não gera as associações nas migrations. Portanto teremos que 
 ```javascript
   responsavelId: {
         type: Sequelize.STRING,
-        // Define a relação entre Responsaveis e ItemPatrimonios através da chave primária "prontuário"
+        // Define a relação entre Responsavel e ItemPatrimonio através da chave primária "prontuário"
         references: {
           model: 'Responsavel',
           key: 'prontuario',
@@ -128,6 +124,7 @@ Para outros exemplos e maiores detalhes, veja mais nesse [link](https://medium.c
 Você pode definir as associações utilizando os métodos `.hasOne()`, `.hasMany()` e `..belongsToMany()`. Nas associações deste aplicativo, ItemPatrimonio está associado com um Responsavel e com um ItemTipo, logo usaremos o `.hasOne()` duas vezes no ItemPatrimonio (Source Model) e `.belongsTo()` nos outros models (Target Model) para indicar o outro lado da associação. Nos arquivos de models criados, as associações então ficarão da seguinte forma.
 
 ```javascript
+  // no arquivo itempatrimonio.js
   static associate(models) {
       // define associação com responsavel
       ItemPatrimonio.hasOne(models.Responsavel, {
@@ -143,14 +140,15 @@ Você pode definir as associações utilizando os métodos `.hasOne()`, `.hasMan
 ```
 
 ```javascript
+  // no arquivo responsavel.js
   static associate(models) {
       Responsavel.belongsTo(models.ItemPatrimonio);
   }
 ```
 
 ```javascript
+  // no arquivo itemtipo.js
   static associate(models) {
-      // define association here
       ItemTipo.belongsTo(models.ItemPatrimonio);
   }
 ```
@@ -175,9 +173,9 @@ Para refletir os models no SGBD, precisamos executar as migrations. Primeiro, ce
 
 Neste exemplo foi utilizado o SGBD mysql. Certifique-se de ter adicionado o módulo para conexão com o mysly verificando o arquivo package.json do módulo app-api. Caso não encontra, insta-lo executando o comando na raiz de app-api:
 
-> npm install mysql
+> npm -g install mysql2
 
-> Antes de executar as migrations, certifique-es que o banco almoxarifado_app tenha sido criado no MySQL. O Sequelize não cria o banco de dados, apenas as tabelas e suas associações.
+> Antes de executar as migrations, certifique-es que o banco almoxarifado_db tenha sido criado no MySQL. O Sequelize não cria o banco de dados, apenas as tabelas e suas associações.
 
 Agora execute as migrations com o comando abaixo no diretórios **/app-api/src/database**:
 
@@ -199,9 +197,15 @@ Veja o arquivo de seed do ItemPatrimonio em "/app-api/src/database/seeders" para
 
 Para executar as seeds na ordem (ItemPatrimonio deve vir por último devido às associações), execute o comando a seguir:
 
-> npx sequelize-cli db:seed --seed seeders\20221006174928-Responsavel.js seeders\20221006174944-ItemTipo.js seeders\20221006174938-ItemPatrimonio.j
+> npx sequelize-cli db:seed --seed seeders\20221013011642-Responsavel.js seeders\20221013011646-ItemTipo.js seeders\20221013011651-ItemPatrimonio.js
+
+> Não se esqueça de substituir o número do nome do arquivo das seeds em xxxxxxxxxxxxxx-Responsavel.js pelo número gerado na criação das suas seeds.
 
 # Utilizando os models na API
-Como criamos módulos de serviço (dentro da pasta services) para cada model, só precisamos realizar alterações apenas nesses scripts para importar os models criados com o Sequelize.
+Como criamos módulos de serviço (dentro da pasta services) para cada model, só precisamos realizar alterações apenas nesses scripts para importar os models criados com o Sequelize. Importe como no exemplo abaixo para ItemPatrimonio.
+
+```javascript
+const {ItemPatrimonio} = require("../../database/models")
+```
 
 
