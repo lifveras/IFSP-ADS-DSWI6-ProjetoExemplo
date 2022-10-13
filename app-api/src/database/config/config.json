@@ -1,10 +1,14 @@
 {
   "development": {
     "username": "root",
-    "password": "ifsp",
-    "database": "almoxarifado_app",
+    "password": "admin",
+    "database": "almoxarifado_db",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "define":{
+      "timestamps": false,
+      "freezeTableName": true
+    }
   },
   "test": {
     "username": "root",
