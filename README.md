@@ -30,10 +30,6 @@ Neste projeto, temos 3 módulos:
 - **app-auth**: api rest de módulo dedicado ao gerenciamento de usuários da aplicação;
 - **app-front**: view da aplicação;
 
-## Repositórios no Github
-
-Neste branch, foram implementados testes unitários na aplicação "IFalmoxarifado". Somente o arquivo [patrimonio.test.js](app-api/test/patrimonio.test.js) foi modificado.
-
 ## Criando os testes no Jest
 
 Inicialmente, precisamos instalar os módulos do Jest e do supertest.
@@ -65,3 +61,8 @@ Para executar os testes, utilize o comando abaixo no diretório onde está o arq
 ```
 
 Outros detalhes sobre exemplos de como programar os testes estão na aula sobre no Moodle.
+
+
+## Arquivo com os testes unitários
+
+Neste branch, foram implementados testes unitários na aplicação "IFalmoxarifado". Somente o arquivo [patrimonio.test.js](app-api/test/patrimonio.test.js) foi modificado.
